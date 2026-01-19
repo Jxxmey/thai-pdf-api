@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+weasyprint
+pydantic
+cffi
+html5lib
+tinycss2
+jinja2

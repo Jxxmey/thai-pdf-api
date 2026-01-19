@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# MacOS
+.DS_Store
+
+# Docker
+.docker/
+
+# Project Generated Files (ไม่ต้องเอาไฟล์ PDF ที่สร้างตอนเทสขึ้นไป)
+*.pdf
+
+# IDE settings (VS Code / PyCharm)
+.vscode/
+.idea/

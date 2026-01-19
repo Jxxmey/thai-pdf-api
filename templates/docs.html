@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai PDF API - Documentation</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <style> 
+        body { font-family: 'Prompt', sans-serif; overflow-x: hidden; } 
+        
+        /* Background Blobs Animation */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #4f46e5; animation-delay: 0s; }
+        .blob-2 { bottom: 20%; right: -10%; width: 400px; height: 400px; background: #06b6d4; animation-delay: 2s; }
+        .blob-3 { top: 40%; left: 30%; width: 300px; height: 300px; background: #ec4899; opacity: 0.4; animation-delay: 4s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        /* Glassmorphism Navbar */
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* ปรับแต่ง Scalar (Docs UI) ให้เข้ากับ Theme */
+        :root {
+            --scalar-color-1: #4f46e5 !important; /* Indigo Primary */
+            --scalar-color-2: #4338ca !important;
+            --scalar-background-1: transparent !important; /* ให้พื้นหลังใส เพื่อโชว์ Blobs */
+            --scalar-font: 'Prompt', sans-serif !important;
+        }
+        
+        /* จัดการกล่อง Docs ให้ลอยเด่น */
+        .docs-container {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 relative">
+
+    <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none">
+        <div class="blob blob-1 rounded-full"></div>
+        <div class="blob blob-2 rounded-full"></div>
+        <div class="blob blob-3 rounded-full"></div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-50 glass transition-all duration-300 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-2 group cursor-pointer hover:opacity-80 transition">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg transform group-hover:rotate-12 transition">
+                    <i class="fa-solid fa-file-pdf text-xl"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight text-gray-900">ThaiPDF <span class="text-indigo-600">API</span></span>
+            </a>
+            
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-gray-600 hover:text-indigo-600 font-medium transition flex items-center gap-2 text-sm md:text-base">
+                    <i class="fa-solid fa-house"></i> <span class="hidden md:inline">กลับหน้าแรก</span>
+                </a>
+                <a href="https://rapidapi.com/user/your-username" target="_blank" class="bg-gray-900 text-white px-5 py-2 rounded-full font-bold shadow-lg hover:bg-gray-800 transition transform hover:scale-105 text-sm">
+                    Get API Key
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-28 px-4 md:px-8 max-w-[90rem] mx-auto min-h-screen">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">API Documentation</h1>
+            <p class="text-gray-500">คู่มือการใช้งานสำหรับนักพัฒนา (Integration Guide)</p>
+        </div>
+
+        <div class="docs-container">
+            <script
+              id="api-reference"
+              data-url="/openapi.json"
+              data-proxy-url="https://proxy.scalar.com"
+              data-layout="modern"
+              data-show-sidebar="true">
+            </script>
+            <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+        </div>
+        
+        <footer class="text-center text-gray-500 text-sm pb-8">
+            &copy; 2026 Thai PDF API Service. Powered by <span class="text-indigo-600 font-bold">FastAPI</span> & <span class="text-indigo-600 font-bold">Scalar</span>
+        </footer>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai PDF API - The Ultimate Thai PDF Solution</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <style> 
+        body { font-family: 'Prompt', sans-serif; overflow-x: hidden; } 
+        
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #4f46e5; animation-delay: 0s; }
+        .blob-2 { bottom: 20%; right: -10%; width: 400px; height: 400px; background: #06b6d4; animation-delay: 2s; }
+        .blob-3 { top: 40%; left: 30%; width: 300px; height: 300px; background: #ec4899; opacity: 0.4; animation-delay: 4s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .glass-dark {
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #4f46e5, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c7c7c7; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a0a0a0; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 relative">
+
+    <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none">
+        <div class="blob blob-1 rounded-full"></div>
+        <div class="blob blob-2 rounded-full"></div>
+        <div class="blob blob-3 rounded-full"></div>
+    </div>
+
+    <nav class="fixed top-0 w-full z-50 glass transition-all duration-300 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 group cursor-pointer" onclick="window.scrollTo(0,0)">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg transform group-hover:rotate-12 transition">
+                    <i class="fa-solid fa-file-pdf text-xl"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight text-gray-900">ThaiPDF <span class="text-indigo-600">API</span></span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#features" class="text-gray-600 hover:text-indigo-600 font-medium transition hover:-translate-y-0.5" data-i18n="nav_features">ฟีเจอร์</a>
+                <a href="#demo" class="text-gray-600 hover:text-indigo-600 font-medium transition hover:-translate-y-0.5" data-i18n="nav_demo">ทดลองใช้</a>
+                <a href="#pricing" class="text-gray-600 hover:text-indigo-600 font-medium transition hover:-translate-y-0.5" data-i18n="nav_pricing">ราคา</a>
+                <a href="/docs" target="_blank" class="text-indigo-600 font-bold hover:text-indigo-800 transition flex items-center gap-1" data-i18n="nav_docs">
+                    <i class="fa-solid fa-book-open text-sm"></i> คู่มือ API
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleLanguage()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-full font-bold transition flex items-center gap-2 border border-gray-300">
+                    <i class="fa-solid fa-globe"></i> <span id="currentLang">TH</span>
+                </button>
+
+                <a href="https://rapidapi.com/user/your-username" target="_blank" class="bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-indigo-500/30 transition transform hover:scale-105 flex items-center gap-2">
+                    <span data-i18n="nav_apikey">Get API Key</span> <i class="fa-solid fa-arrow-right text-sm"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="pt-40 pb-32 relative">
+        <div class="max-w-7xl mx-auto px-6 text-center relative z-10">
+            <div data-aos="fade-down" class="inline-flex items-center gap-2 bg-white/80 backdrop-blur border border-indigo-100 rounded-full px-4 py-1.5 text-sm text-indigo-700 font-medium mb-8 shadow-sm">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                </span>
+                Available on RapidAPI Marketplace
+            </div>
+
+            <h1 data-aos="fade-up" data-aos-delay="100" class="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight">
+                <span data-i18n="hero_title_1">สร้างเอกสาร PDF ภาษาไทย</span> <br>
+                <span class="text-gradient" data-i18n="hero_title_2">ที่สมบูรณ์แบบที่สุด</span>
+            </h1>
+            
+            <p data-aos="fade-up" data-aos-delay="200" class="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed" data-i18n="hero_desc">
+                หมดปัญหาสระลอย วรรณยุกต์จม API สำหรับนักพัฒนาที่ต้องการสร้างใบเสร็จ ใบเสนอราคา และรายงาน PDF อย่างมืออาชีพ
+            </p>
+            
+            <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col md:flex-row justify-center gap-4">
+                <a href="#demo" class="bg-gray-900 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-gray-800 transition transform hover:-translate-y-1">
+                    <i class="fa-solid fa-flask mr-2"></i> <span data-i18n="btn_demo">ทดลอง Demo ฟรี</span>
+                </a>
+                <a href="/docs" target="_blank" class="glass text-gray-800 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-code text-indigo-500"></i> <span data-i18n="btn_docs">อ่านคู่มือ API</span>
+                </a>
+            </div>
+
+            <div class="absolute top-1/2 left-10 hidden lg:block animate-bounce duration-[3000ms]">
+                <div class="glass p-4 rounded-xl shadow-lg rotate-[-6deg]">
+                    <i class="fa-solid fa-font text-3xl text-indigo-500"></i>
+                </div>
+            </div>
+            <div class="absolute top-1/3 right-10 hidden lg:block animate-bounce duration-[4000ms]">
+                <div class="glass p-4 rounded-xl shadow-lg rotate-[12deg]">
+                    <i class="fa-solid fa-file-invoice-dollar text-3xl text-green-500"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="demo" class="py-20 relative z-10">
+        <div class="max-w-6xl mx-auto px-6">
+            <div data-aos="zoom-in-up" class="glass rounded-3xl shadow-2xl overflow-hidden border border-white/50">
+                <div class="glass-dark px-6 py-4 flex justify-between items-center border-b border-gray-700">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <div class="text-gray-400 text-xs font-mono bg-black/30 px-3 py-1 rounded-full">
+                        api.thaipdf.com/v1/sandbox
+                    </div>
+                </div>
+                
+                <div class="p-8 grid md:grid-cols-5 gap-8 bg-white/50">
+                    <div class="md:col-span-3 space-y-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800" data-i18n="demo_header">กรอกข้อมูลทดสอบ</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="group">
+                                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block" data-i18n="label_inv_no">เลขที่เอกสาร</label>
+                                <input type="text" id="inv_no" value="DEMO-001" class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-500 uppercase mb-1 block" data-i18n="label_date">วันที่</label>
+                                <input type="text" id="date" value="19/01/2569" class="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-indigo-600 uppercase mb-1 block" data-i18n="label_seller">ผู้ขาย (Seller)</label>
+                                    <input type="text" id="prov_name" value="บริษัท ตัวอย่าง จำกัด" class="w-full bg-white border-0 rounded-md p-2 text-sm shadow-sm mb-2">
+                                    <textarea id="prov_addr" rows="2" class="w-full bg-white border-0 rounded-md p-2 text-xs text-gray-500 shadow-sm resize-none">999 ถ.สาทร กทม.</textarea>
+                                    <input type="hidden" id="prov_tax" value="0105555555555">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-green-600 uppercase mb-1 block" data-i18n="label_buyer">ผู้ซื้อ (Buyer)</label>
+                                    <input type="text" id="cust_name" value="คุณลูกค้า VIP" class="w-full bg-white border-0 rounded-md p-2 text-sm shadow-sm mb-2">
+                                    <textarea id="cust_addr" rows="2" class="w-full bg-white border-0 rounded-md p-2 text-xs text-gray-500 shadow-sm resize-none">123 ถ.สุขุมวิท กทม.</textarea>
+                                    <input type="hidden" id="cust_tax" value="">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase mb-2 block" data-i18n="label_items">รายการสินค้า</label>
+                            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-gray-50 text-gray-500">
+                                        <tr>
+                                            <th class="p-3 text-left font-medium" data-i18n="th_item">รายการ</th>
+                                            <th class="p-3 text-right font-medium w-16" data-i18n="th_qty">จำนวน</th>
+                                            <th class="p-3 text-right font-medium w-24" data-i18n="th_price">ราคา</th>
+                                            <th class="p-3 w-8"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="itemsTableBody"></tbody>
+                                </table>
+                            </div>
+                            <button onclick="addItem()" class="mt-3 text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition">
+                                <i class="fa-solid fa-plus-circle"></i> <span data-i18n="btn_add_item">เพิ่มรายการ</span>
+                            </button>
+                        </div>
+                        <input type="file" id="logoInput" class="hidden">
+                    </div>
+
+                    <div class="md:col-span-2 flex flex-col justify-between">
+                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 h-full relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-indigo-100 to-transparent rounded-bl-full opacity-50"></div>
+                            
+                            <h3 class="text-lg font-bold text-gray-800 mb-6" data-i18n="summary_header">สรุปยอดเงิน</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <span class="text-gray-500 text-sm" data-i18n="label_subtotal">รวมเป็นเงิน</span> 
+                                    <span id="subtotalDisplay" class="font-mono font-bold text-gray-700">0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-indigo-50 rounded-lg border border-indigo-100">
+                                    <div class="flex items-center gap-2">
+                                        <input type="checkbox" id="vatCheck" checked onchange="calculateTotal()" class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                        <span class="text-indigo-700 text-sm font-medium">VAT 7%</span>
+                                    </div>
+                                    <span id="vatDisplay" class="font-mono font-bold text-indigo-700">0.00</span>
+                                </div>
+                                <div class="flex justify-between items-end pt-4 border-t border-dashed border-gray-300">
+                                    <span class="text-gray-800 font-bold" data-i18n="label_grandtotal">ยอดสุทธิ</span> 
+                                    <span id="grandTotalDisplay" class="font-mono text-3xl font-bold text-gray-900 leading-none">0.00</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto pt-8">
+                                <button onclick="generateDemo()" id="genBtn" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 px-6 rounded-xl shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl flex justify-center items-center group">
+                                    <i class="fa-solid fa-wand-magic-sparkles mr-2 group-hover:rotate-12 transition"></i> 
+                                    <span data-i18n="btn_gen_demo">สร้าง PDF (Demo)</span>
+                                </button>
+                                <p class="text-center text-xs text-gray-400 mt-3 flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-lock text-[10px]"></i> <span data-i18n="watermark_note">ไฟล์จะมีลายน้ำ (Watermark)</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-24 bg-white/80 backdrop-blur-sm relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900" data-i18n="features_title">ทำไมต้อง ThaiPDF?</h2>
+                <div class="w-20 h-1 bg-indigo-500 mx-auto mt-4 rounded-full"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div data-aos="fade-up" data-aos-delay="100" class="p-8 bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition hover:-translate-y-2 group">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:bg-blue-600 group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-font"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800" data-i18n="feat_1_title">ภาษาไทย 100%</h3>
+                    <p class="text-gray-500 leading-relaxed" data-i18n="feat_1_desc">Engine ถูกปรับจูนมาเพื่อภาษาไทยโดยเฉพาะ ตัดคำถูกต้อง สระไม่ลอย วรรณยุกต์ไม่จม รองรับ Font ราชการ</p>
+                </div>
+                
+                <div data-aos="fade-up" data-aos-delay="200" class="p-8 bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition hover:-translate-y-2 group">
+                    <div class="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:bg-green-600 group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800" data-i18n="feat_2_title">Ultra Fast</h3>
+                    <p class="text-gray-500 leading-relaxed" data-i18n="feat_2_desc">ประมวลผล PDF หน้า A4 ภายในเวลาไม่ถึง 2 วินาที รองรับการใช้งานพร้อมกัน (Concurrency) ได้อย่างเสถียร</p>
+                </div>
+                
+                <div data-aos="fade-up" data-aos-delay="300" class="p-8 bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition hover:-translate-y-2 group">
+                    <div class="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 text-3xl group-hover:bg-purple-600 group-hover:text-white transition duration-300">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-gray-800" data-i18n="feat_3_title">Secure & Reliable</h3>
+                    <p class="text-gray-500 leading-relaxed" data-i18n="feat_3_desc">จัดการ API Key และ Billing ผ่าน RapidAPI มั่นใจได้ในความปลอดภัย ไม่ต้องห่วงเรื่อง Server ล่ม</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900" data-i18n="pricing_title">แพ็กเกจราคา</h2>
+                <p class="text-gray-500 mt-4 text-lg" data-i18n="pricing_subtitle">เริ่มต้นใช้งานฟรี จ่ายเท่าที่ใช้ ผ่าน RapidAPI</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                
+                <div data-aos="flip-left" class="bg-white/80 backdrop-blur rounded-3xl shadow-lg p-8 border border-gray-200 hover:border-gray-300 transition relative">
+                    <h3 class="text-xl font-bold text-gray-500">Starter</h3>
+                    <div class="my-6"><span class="text-5xl font-bold text-gray-900">Free</span></div>
+                    <p class="text-sm text-gray-500 mb-8 pb-8 border-b border-gray-100" data-i18n="plan_1_desc">สำหรับทดสอบระบบและโปรเจกต์ขนาดเล็ก</p>
+                    <ul class="space-y-4 text-sm mb-8 text-gray-600">
+                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-500 mr-3 text-lg"></i> <strong>50 Requests</strong> / <span data-i18n="month">เดือน</span></li>
+                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-500 mr-3 text-lg"></i> Hard Limit protection</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-500 mr-3 text-lg"></i> Full Thai Font Support</li>
+                    </ul>
+                    <a href="https://rapidapi.com/user/your-username" target="_blank" class="block text-center w-full border-2 border-gray-300 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition" data-i18n="btn_free">
+                        รับ API Key ฟรี
+                    </a>
+                </div>
+
+                <div data-aos="flip-up" class="bg-gray-900 text-white rounded-3xl shadow-2xl p-8 border border-gray-700 relative transform md:-translate-y-6">
+                    <div class="absolute top-0 right-0 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl rounded-tr-2xl shadow-lg">POPULAR</div>
+                    <h3 class="text-xl font-bold text-indigo-300">Pro Business</h3>
+                    <div class="my-6 flex items-baseline"><span class="text-5xl font-bold">$9.99</span> <span class="text-gray-400 ml-2">/ <span data-i18n="month">month</span></span></div>
+                    <p class="text-sm text-gray-400 mb-8 pb-8 border-b border-gray-700" data-i18n="plan_2_desc">คุ้มค่าที่สุดสำหรับธุรกิจ SME และ Startup</p>
+                    <ul class="space-y-4 text-sm mb-8 text-gray-300">
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-indigo-400 mr-3 text-lg"></i> <strong>2,000 Requests</strong> / <span data-i18n="month">เดือน</span></li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-indigo-400 mr-3 text-lg"></i> $0.005 <span data-i18n="overage">ส่วนเกิน (Pay as you go)</span></li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-indigo-400 mr-3 text-lg"></i> Priority Support</li>
+                        <li class="flex items-center"><i class="fa-solid fa-circle-check text-indigo-400 mr-3 text-lg"></i> No Watermark</li>
+                    </ul>
+                    <a href="https://rapidapi.com/user/your-username" target="_blank" class="block text-center w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-105" data-i18n="btn_sub">
+                        สมัครเลย
+                    </a>
+                </div>
+
+                <div data-aos="flip-right" class="bg-white/80 backdrop-blur rounded-3xl shadow-lg p-8 border border-gray-200 hover:border-gray-300 transition">
+                    <h3 class="text-xl font-bold text-gray-800">Ultra</h3>
+                    <div class="my-6 flex items-baseline"><span class="text-5xl font-bold">$29.99</span> <span class="text-gray-500 ml-2">/ <span data-i18n="month">month</span></span></div>
+                    <p class="text-sm text-gray-500 mb-8 pb-8 border-b border-gray-100" data-i18n="plan_3_desc">สำหรับองค์กรที่ต้องการประสิทธิภาพสูงสุด</p>
+                    <ul class="space-y-4 text-sm mb-8 text-gray-600">
+                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-500 mr-3 text-lg"></i> <strong>10,000 Requests</strong> / <span data-i18n="month">เดือน</span></li>
+                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-500 mr-3 text-lg"></i> High Performance Tier</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-green-500 mr-3 text-lg"></i> 99.9% Uptime SLA</li>
+                    </ul>
+                    <a href="https://rapidapi.com/user/your-username" target="_blank" class="block text-center w-full border-2 border-indigo-100 text-indigo-600 font-bold py-3 rounded-xl hover:bg-indigo-50 transition" data-i18n="btn_sub">
+                        สมัครเลย
+                    </a>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12 flex justify-center items-center gap-2 text-gray-500 text-sm opacity-80">
+                <i class="fa-solid fa-shield-halved"></i> 
+                <span>Secured Billing & Key Management by <strong>RapidAPI</strong></span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-white py-16 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent inline-block">ThaiPDF API</h3>
+            <p class="text-gray-400 mb-8 max-w-lg mx-auto" data-i18n="footer_desc">ยกระดับงานเอกสารของคุณด้วย API ที่เข้าใจภาษาไทยอย่างแท้จริง เริ่มต้นใช้งานได้ทันที</p>
+            <div class="flex justify-center space-x-8 mb-10">
+                <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fa-brands fa-github text-2xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fa-brands fa-facebook text-2xl"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fa-brands fa-twitter text-2xl"></i></a>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-sm text-gray-600">
+                &copy; 2026 Thai PDF API Service. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Init AOS Animation
+        AOS.init({ duration: 800, once: true, offset: 50 });
+
+        // --- Multi-language Logic ---
+        const translations = {
+            th: {
+                nav_features: "ฟีเจอร์",
+                nav_demo: "ทดลองใช้",
+                nav_pricing: "ราคา",
+                nav_docs: '<i class="fa-solid fa-book-open text-sm"></i> คู่มือ API',
+                nav_apikey: "Get API Key",
+                
+                hero_title_1: "สร้างเอกสาร PDF ภาษาไทย",
+                hero_title_2: "ที่สมบูรณ์แบบที่สุด",
+                hero_desc: "หมดปัญหาสระลอย วรรณยุกต์จม API สำหรับนักพัฒนาที่ต้องการสร้างใบเสร็จ ใบเสนอราคา และรายงาน PDF อย่างมืออาชีพ",
+                btn_demo: "ทดลอง Demo ฟรี",
+                btn_docs: "อ่านคู่มือ API",
+                
+                demo_header: "กรอกข้อมูลทดสอบ",
+                label_inv_no: "เลขที่เอกสาร",
+                label_date: "วันที่",
+                label_seller: "ผู้ขาย (Seller)",
+                label_buyer: "ผู้ซื้อ (Buyer)",
+                label_items: "รายการสินค้า",
+                th_item: "รายการ",
+                th_qty: "จำนวน",
+                th_price: "ราคา",
+                btn_add_item: "เพิ่มรายการ",
+                
+                summary_header: "สรุปยอดเงิน",
+                label_subtotal: "รวมเป็นเงิน",
+                label_grandtotal: "ยอดสุทธิ",
+                btn_gen_demo: "สร้าง PDF (Demo)",
+                watermark_note: "ไฟล์จะมีลายน้ำ (Watermark)",
+                
+                features_title: "ทำไมต้อง ThaiPDF?",
+                feat_1_title: "ภาษาไทย 100%",
+                feat_1_desc: "Engine ถูกปรับจูนมาเพื่อภาษาไทยโดยเฉพาะ ตัดคำถูกต้อง สระไม่ลอย วรรณยุกต์ไม่จม รองรับ Font ราชการ",
+                feat_2_title: "Ultra Fast",
+                feat_2_desc: "ประมวลผล PDF หน้า A4 ภายในเวลาไม่ถึง 2 วินาที รองรับการใช้งานพร้อมกัน (Concurrency) ได้อย่างเสถียร",
+                feat_3_title: "Secure & Reliable",
+                feat_3_desc: "จัดการ API Key และ Billing ผ่าน RapidAPI มั่นใจได้ในความปลอดภัย ไม่ต้องห่วงเรื่อง Server ล่ม",
+                
+                pricing_title: "แพ็กเกจราคา",
+                pricing_subtitle: "เริ่มต้นใช้งานฟรี จ่ายเท่าที่ใช้ ผ่าน RapidAPI",
+                plan_1_desc: "สำหรับทดสอบระบบและโปรเจกต์ขนาดเล็ก",
+                month: "เดือน",
+                btn_free: "รับ API Key ฟรี",
+                plan_2_desc: "คุ้มค่าที่สุดสำหรับธุรกิจ SME และ Startup",
+                overage: "ส่วนเกิน (Pay as you go)",
+                btn_sub: "สมัครเลย",
+                plan_3_desc: "สำหรับองค์กรที่ต้องการประสิทธิภาพสูงสุด",
+                
+                footer_desc: "ยกระดับงานเอกสารของคุณด้วย API ที่เข้าใจภาษาไทยอย่างแท้จริง เริ่มต้นใช้งานได้ทันที",
+                item_ph_name: "ชื่อสินค้า..."
+            },
+            en: {
+                nav_features: "Features",
+                nav_demo: "Demo",
+                nav_pricing: "Pricing",
+                nav_docs: '<i class="fa-solid fa-book-open text-sm"></i> Docs',
+                nav_apikey: "Get API Key",
+                
+                hero_title_1: "Create Perfect",
+                hero_title_2: "Thai PDF Documents",
+                hero_desc: "No more floating vowels or sunken tones. The ultimate API for developers to generate professional Thai Invoices, Quotes, and Reports.",
+                btn_demo: "Try Live Demo",
+                btn_docs: "Read the Docs",
+                
+                demo_header: "Test Data",
+                label_inv_no: "Invoice No",
+                label_date: "Date",
+                label_seller: "Seller",
+                label_buyer: "Buyer",
+                label_items: "Items",
+                th_item: "Description",
+                th_qty: "Qty",
+                th_price: "Price",
+                btn_add_item: "Add Item",
+                
+                summary_header: "Summary",
+                label_subtotal: "Subtotal",
+                label_grandtotal: "Grand Total",
+                btn_gen_demo: "Generate PDF (Demo)",
+                watermark_note: "Output will be watermarked",
+                
+                features_title: "Why ThaiPDF?",
+                feat_1_title: "Native Thai Support",
+                feat_1_desc: "Engine optimized for Thai language. Correct line breaking, vowel positioning, and supports official fonts (Sarabun).",
+                feat_2_title: "Ultra Fast",
+                feat_2_desc: "Generates A4 PDF in under 2 seconds. High concurrency support for production scale.",
+                feat_3_title: "Secure & Reliable",
+                feat_3_desc: "Secure billing and API Key management via RapidAPI. 99.9% Uptime guaranteed.",
+                
+                pricing_title: "Pricing Plans",
+                pricing_subtitle: "Start for free. Pay as you go via RapidAPI.",
+                plan_1_desc: "For testing and small projects.",
+                month: "month",
+                btn_free: "Get Free Key",
+                plan_2_desc: "Best value for SMEs and Startups.",
+                overage: "extra per request",
+                btn_sub: "Subscribe",
+                plan_3_desc: "For enterprise-grade performance.",
+                
+                footer_desc: "Elevate your document workflow with the API that truly understands Thai language. Start today.",
+                item_ph_name: "Item name..."
+            }
+        };
+
+        let currentLang = localStorage.getItem('lang') || 'th';
+
+        function updateLanguage() {
+            // Update Text
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerHTML = translations[currentLang][key];
+                }
+            });
+            
+            // Update Placeholders
+            document.querySelectorAll('.item-name').forEach(el => {
+                el.placeholder = translations[currentLang]['item_ph_name'];
+            });
+
+            // Update Button State
+            document.getElementById('currentLang').textContent = currentLang.toUpperCase();
+            localStorage.setItem('lang', currentLang);
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'th' ? 'en' : 'th';
+            updateLanguage();
+        }
+
+        // --- Table & Calculation Logic ---
+        const itemsBody = document.getElementById('itemsTableBody');
+        function addItem(name="",qty=1,price=0){
+            // Use translation for default name only if empty
+            if(name === "") name = currentLang === 'th' ? "ค่าบริการ..." : "Service fee...";
+            
+            const row=document.createElement('tr');row.className="border-b border-gray-100/50 hover:bg-gray-50 transition";
+            row.innerHTML=`<td class="p-2"><input type="text" value="${name}" class="w-full bg-transparent outline-none item-name text-gray-700 placeholder-gray-400" placeholder="${translations[currentLang]['item_ph_name']}"></td><td class="p-2"><input type="number" value="${qty}" class="w-full bg-transparent text-right outline-none item-qty text-gray-700" oninput="calculateTotal()"></td><td class="p-2"><input type="number" value="${price}" class="w-full bg-transparent text-right outline-none item-price text-gray-700" oninput="calculateTotal()"></td><td class="p-2 text-right font-mono item-total text-gray-900 font-medium">0.00</td><td class="p-2 text-center"><button onclick="this.closest('tr').remove();calculateTotal()" class="text-red-300 hover:text-red-500 transition"><i class="fa-solid fa-times"></i></button></td>`;
+            itemsBody.appendChild(row);calculateTotal();
+        }
+        function calculateTotal(){
+            let subtotal=0;document.querySelectorAll('#itemsTableBody tr').forEach(row=>{const qty=parseFloat(row.querySelector('.item-qty').value)||0;const price=parseFloat(row.querySelector('.item-price').value)||0;const total=qty*price;row.querySelector('.item-total').textContent=formatMoney(total);subtotal+=total;});
+            const vat=document.getElementById('vatCheck').checked?subtotal*0.07:0;
+            document.getElementById('subtotalDisplay').textContent=formatMoney(subtotal);document.getElementById('vatDisplay').textContent=formatMoney(vat);document.getElementById('grandTotalDisplay').textContent=formatMoney(subtotal+vat);
+        }
+        function formatMoney(num){return num.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+        
+        // Init
+        addItem(currentLang === 'th' ? "ค่าบริการทำ API" : "API Development Service", 1, 5000);
+        addItem(currentLang === 'th' ? "ค่าเช่า Server" : "Server Cost", 1, 1500);
+        
+        // Apply Language on Load
+        updateLanguage();
+
+        async function generateDemo(){
+            const btn=document.getElementById('genBtn');const originalText=btn.innerHTML;btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';btn.disabled=true;
+            const items=[];document.querySelectorAll('#itemsTableBody tr').forEach(row=>{items.push({name:row.querySelector('.item-name').value,quantity:parseInt(row.querySelector('.item-qty').value),price:formatMoney(parseFloat(row.querySelector('.item-price').value)),total:row.querySelector('.item-total').textContent});});
+            const payload={logo_url:null,provider_name:document.getElementById('prov_name').value,provider_address:document.getElementById('prov_addr').value,provider_tax_id:document.getElementById('prov_tax').value,customer_name:document.getElementById('cust_name').value,customer_address:document.getElementById('cust_addr').value,customer_tax_id:document.getElementById('cust_tax').value,invoice_no:document.getElementById('inv_no').value,date:document.getElementById('date').value,items:items,subtotal:document.getElementById('subtotalDisplay').textContent,vat:document.getElementById('vatDisplay').textContent,grand_total:document.getElementById('grandTotalDisplay').textContent};
+            try{
+                const response=await fetch('/create-demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                if(response.ok){const blob=await response.blob();const url=window.URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`DEMO-${payload.invoice_no}.pdf`;document.body.appendChild(a);a.click();window.URL.revokeObjectURL(url);}else{const err=await response.json();alert('Error: '+(err.detail||'Failed'));}
+            }catch(e){console.error(e);alert('Connection Failed');}finally{btn.innerHTML=originalText;btn.disabled=false;}
+        }
+    </script>
+</body>
+</html>

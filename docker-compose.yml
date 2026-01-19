@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: thai_pdf_api_container
+    ports:
+      - "8000:8000"
+    volumes:
+      # Map โฟลเดอร์ปัจจุบัน (.) เข้าไปที่ /app ใน container
+      # เพื่อให้แก้ไขโค้ด main.py แล้วเซิร์ฟเวอร์อัปเดตทันที (ไม่ต้อง Build ใหม่)
+      - .:/app
+    environment:
+      - WORKERS=1
+    # สั่งรัน uvicorn แบบ --reload เพื่อให้เหมาะกับการพัฒนา (Development)
+    command: python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    restart: always
