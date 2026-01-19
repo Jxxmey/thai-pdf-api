@@ -9,23 +9,26 @@ from jinja2 import Environment, FileSystemLoader
 from typing import List, Optional
 import os
 
-# --- 1. Security ---
-API_KEY_NAME = "x-api-key"
+# --- 1. Security (Updated for RapidAPI) ---
+API_KEY_NAME = "X-RapidAPI-Proxy-Secret"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
-API_SECRET = os.getenv("API_SECRET", "dev-secret-123")
+API_SECRET = os.getenv("RAPIDAPI_SECRET", "dev-secret-123")
 
 async def get_api_key(api_key_header: str = Security(api_key_header)):
     if api_key_header == API_SECRET:
         return api_key_header
     else:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access Denied")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Access Denied: Request must come from RapidAPI"
+        )
 
-# --- 2. App Config (แก้ไขจุดนี้) ---
+# --- 2. App Config ---
 app = FastAPI(
     title="Thai PDF API Service", 
     version="1.1.0",
-    docs_url=None,    # <--- ต้องปิดตัวเดิม
-    redoc_url=None,   # <--- ต้องปิดตัวเดิม
+    docs_url=None,    
+    redoc_url=None,   
     openapi_url="/openapi.json"
 )
 
@@ -37,12 +40,10 @@ else:
 if os.path.exists("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Endpoint นี้จะทำงานแทน Swagger ตัวเดิม
 @app.get("/docs", include_in_schema=False)
 async def scalar_html():
     if not templates:
         return HTMLResponse("Templates folder not found")
-    # เรียกใช้ไฟล์ templates/docs.html ที่เราเพิ่งสร้าง
     template = templates.get_template("docs.html")
     return HTMLResponse(template.render())
 
